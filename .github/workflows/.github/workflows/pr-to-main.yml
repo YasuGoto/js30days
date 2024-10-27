@@ -1,0 +1,28 @@
+name: PR to Main
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  create_pr_to_main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create a new PR targeting main
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls \
+            -d '{
+              "title": "PR from develop to main",
+              "head": "${{ github.event.pull_request.head.ref }}",
+              "base": "main",
+              "body": "Automatically created PR after merging to develop"
+            }'
+            
