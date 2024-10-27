@@ -3,7 +3,7 @@ name: PR to Main
 on:
   pull_request:
     branches:
-      - develop
+      - main
 
 jobs:
   create_pr_to_main:
@@ -25,4 +25,3 @@ jobs:
               "base": "main",
               "body": "Automatically created PR after merging to develop"
             }'
-            
