@@ -1,0 +1,27 @@
+name: Update PR target on branch deletion
+
+on:
+  push:
+    branches:
+      - 'refs/heads/*'  # 任意のブランチが削除されたときにトリガー
+
+jobs:
+  update_pr_target:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Find PRs targeting deleted branch
+      run: |
+        BRANCH_NAME="${GITHUB_REF##*/}"  # 削除されたブランチ名
+        prs=$(gh pr list --state open --json number,headRefName --jq ".[] | select(.headRefName == \"$BRANCH_NAME\") | .number")
+
+        for pr in $prs; do
+          echo "Updating target for PR #$pr"
+          gh pr edit "$pr" --base main  # ターゲットをmainに変更
+        done
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
